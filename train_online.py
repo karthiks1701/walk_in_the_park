@@ -36,7 +36,7 @@ flags.DEFINE_float('action_filter_high_cut', None, 'Action filter high cut.')
 flags.DEFINE_integer('action_history', 1, 'Action history.')
 flags.DEFINE_integer('control_frequency', 20, 'Control frequency.')
 flags.DEFINE_integer('utd_ratio', 1, 'Update to data ratio.')
-flags.DEFINE_boolean('real_robot', False, 'Use real robot.')
+flags.DEFINE_boolean('real_robot', True, 'Use real robot.')
 config_flags.DEFINE_config_file(
     'config',
     'configs/sac_config.py',
@@ -61,10 +61,10 @@ def main(_):
 
     env = wrap_gym(env, rescale_actions=True)
     env = gym.wrappers.RecordEpisodeStatistics(env, deque_size=1)
-    env = gym.wrappers.RecordVideo(
-        env,
-        f'videos/train_{FLAGS.action_filter_high_cut}',
-        episode_trigger=lambda x: True)
+    # env = gym.wrappers.RecordVideo(
+    #     env,
+    #     f'videos/train_{FLAGS.action_filter_high_cut}',
+    #     episode_trigger=lambda x: True)
     env.seed(FLAGS.seed)
 
     if not FLAGS.real_robot:
@@ -84,9 +84,9 @@ def main(_):
     agent = SACLearner.create(FLAGS.seed, env.observation_space,
                               env.action_space, **kwargs)
 
-    chkpt_dir = 'saved/checkpoints'
+    chkpt_dir = '/home/somz/projects/RLonrobots/walk_in_the_park/saved/checkpoints'
     os.makedirs(chkpt_dir, exist_ok=True)
-    buffer_dir = 'saved/buffers'
+    buffer_dir = '/home/somz/projects/RLonrobots/walk_in_the_park/saved/buffers'
 
     last_checkpoint = checkpoints.latest_checkpoint(chkpt_dir)
 
@@ -103,7 +103,9 @@ def main(_):
         with open(os.path.join(buffer_dir, f'buffer_{start_i}'), 'rb') as f:
             replay_buffer = pickle.load(f)
 
+    # print(env.reset())
     observation, done = env.reset(), False
+
     for i in tqdm.tqdm(range(start_i, FLAGS.max_steps),
                        smoothing=0.1,
                        disable=not FLAGS.tqdm):

@@ -60,7 +60,7 @@ class LaikagoMotorModel(object):
         self._kd = kd
         self._torque_limits = torque_limits
         if torque_limits is not None:
-            if isinstance(torque_limits, (collections.Sequence, np.ndarray)):
+            if isinstance(torque_limits, (collections.abc.Sequence, np.ndarray)):
                 self._torque_limits = np.asarray(torque_limits)
             else:
                 self._torque_limits = np.full(NUM_MOTORS, torque_limits)
