@@ -70,6 +70,10 @@ class ImitationWrapperEnv(object):
     """
         original_observation, reward, done, _ = self._gym_env.step(action)
         observation = self._modify_observation(original_observation)
+        # print("------------------")
+        # print("Original Observation: ", original_observation)
+        # print("Observation: ", observation)
+        # print("------------------")
         terminated = done
 
         done |= (self.env_step_counter >= self._max_episode_steps)
@@ -121,7 +125,14 @@ class ImitationWrapperEnv(object):
       A numpy array contains the initial original concatenated with target
       observations from the reference motion.
     """
+        # print("--------task-----")
+        # print("TASK", self._task)
+        # print("--------task-----")
+
         target_observation = self._task.build_target_obs()
+        # print("--------target_observation-----")
+        # print("Target Observation: ", target_observation)
+        # print("--------target_observation-----")
         observation = np.concatenate(
             [original_observation, target_observation], axis=-1)
         return observation

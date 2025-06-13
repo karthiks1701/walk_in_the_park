@@ -76,12 +76,20 @@ class TrajectoryGeneratorWrapperEnv(object):
       ValueError if input action is None.
 
     """
+        
+        # print("------------------")
+        # print("STEP TrajectoryGeneratorWrapperEnv, action: ", action)
+        # print("------------------")
 
         if action is None:
             raise ValueError('Action cannot be None')
 
         new_action = self._trajectory_generator.get_action(
             self._gym_env.robot.GetTimeSinceReset(), action)
+        
+        # print("------------------")
+        # print("New action: ", new_action)
+        # print("------------------")
 
         original_observation, reward, done, _ = self._gym_env.step(new_action)
 

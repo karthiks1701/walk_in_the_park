@@ -247,6 +247,9 @@ class Minitaur(object):
         return self._step_counter * self.time_step
 
     def _StepInternal(self, action, motor_control_mode):
+        # print("--------------------")
+        # print("StepInternal minitaur.py")
+        # print("--------------------")
         self.ApplyAction(action, motor_control_mode)
         self._pybullet_client.stepSimulation()
         self.ReceiveObservation()
@@ -254,12 +257,18 @@ class Minitaur(object):
 
     def Step(self, action, control_mode=None):
         """Steps simulation."""
+        # print("--------------------")
+        # print("Step minitaur.py")
         if self._enable_action_filter:
             action = self._FilterAction(action)
         if control_mode == None:
             control_mode = self._motor_control_mode
+        # print("self._action_repeaty", self._action_repeat)
         for i in range(self._action_repeat):
+            # print("--------------------")
+            # print("Minautor Loop index", i)
             proc_action = self.ProcessAction(action, i)
+            # print(f"DEBUG: Processed action in Minitaur:\n{proc_action}")
             self._StepInternal(proc_action, control_mode)
             self._step_counter += 1
 
@@ -1506,6 +1515,8 @@ class Minitaur(object):
       If interpolation is enabled, returns interpolated action depending on
       the current action repeat substep.
     """
+        # print("--------------")
+        # print("ProcessAction in minautor")
         if self._enable_action_interpolation and self._last_action is not None:
             lerp = float(substep_count + 1) / self._action_repeat
             proc_action = self._last_action + lerp * (action -

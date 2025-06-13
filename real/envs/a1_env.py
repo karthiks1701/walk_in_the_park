@@ -141,6 +141,8 @@ class A1Real(gym.Env):
              self._foot_contacts]).astype(np.float32)
 
     def step(self, action):
+        # print("-----------------")
+        # print("Inside step A1Real")
         assert self.env._robot._action_repeat == 50
         self.env._robot.Step(action, robot_config.MotorControlMode.POSITION)
 

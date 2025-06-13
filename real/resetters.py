@@ -5,6 +5,8 @@ import os
 
 import numpy as np
 
+import time
+
 import real.sac_dev.learning.sac_agent as sac_agent
 import tensorflow as tf
 from real.envs.env_wrappers import reset_task
@@ -97,8 +99,15 @@ class GetupResetter(object):
         done = False
         self._env.robot.running_reset_policy = True
         while not done:
+        # while True:
+            
             action = policy(obs)
+            # print("--------------------")
+            # print("Action after policy before applying : ", action)
+            # print("--------------------")
             obs, reward, done, _ = self._env.step(action)
+
+            # time.sleep(0.5)
 
         self._env.robot.running_reset_policy = False
         self._env.set_task(old_task)
@@ -135,6 +144,7 @@ class GetupResetter(object):
         for i in range(1, 5):
             print("Reset attempt {}/5".format(i))
             try:
+                print("Running reset policy")
                 self._run_single_episode(
                     self._reset_task,
                     lambda x: self._reset_model.sample_action(x, True)[0])
@@ -144,7 +154,8 @@ class GetupResetter(object):
                 if abs(roll) < np.deg2rad(30) and abs(pitch) < np.deg2rad(
                         30) and np.linalg.norm(angles - GOAL_ANGLES) < .20:
                     break
-            except:
+            except Exception as e:
+                print("Error during reset policy:", e)
                 continue
 
         self._go_to_standing_pose()

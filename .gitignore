@@ -132,3 +132,4 @@ dmypy.json
 a1/
 saved/
 wandb/
+test/

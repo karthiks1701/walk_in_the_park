@@ -55,9 +55,9 @@ def build_imitation_env():
 
     num_motors = a1.NUM_MOTORS
     traj_gen = simple_openloop.A1PoseOffsetGenerator(
-        action_limit=np.array(
-            [0.802851455917, 4.18879020479, -0.916297857297] * 4) -
-        np.array([0, 0.9, -1.8] * 4))
+        action_limit=np.array([0.802851455917, 4.18879020479, -0.916297857297] * 4) - np.array([0, 0.9, -1.8] * 4))
+
+    
 
     sensors = [
         sensor_wrappers.HistoricSensorWrapper(

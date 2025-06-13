@@ -297,11 +297,16 @@ class A1Robot(a1.A1):
     """
         if motor_control_mode is None:
             motor_control_mode = self._motor_control_mode
+        
+        # print("--------------------")
+        # print("motor_commands before clip: ", motor_commands)
 
         motor_commands = self._ClipMotorCommands(motor_commands,
                                                  motor_control_mode)
-
+        # print("DEBUG: Motor Commands: ", motor_commands)
+        # print("--------------------")
         command = np.zeros(60, dtype=np.float32)
+
         if motor_control_mode == robot_config.MotorControlMode.POSITION:
             for motor_id in range(NUM_MOTORS):
                 command[motor_id * 5] = motor_commands[motor_id]
@@ -316,6 +321,7 @@ class A1Robot(a1.A1):
             raise ValueError(
                 'Unknown motor control mode for A1 robot: {}.'.format(
                     motor_control_mode))
+        
 
         with self._robot_command_lock:
             self._robot_interface.send_command(command)
@@ -433,6 +439,8 @@ class A1Robot(a1.A1):
         self._is_alive = False
 
     def _StepInternal(self, action, motor_control_mode=None):
+        # print("--------------------")
+        # print("a1_robot _StepInternal")
         if self._is_safe:
             self.ApplyAction(action, motor_control_mode)
         self.ReceiveObservation()

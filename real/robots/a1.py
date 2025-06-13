@@ -616,6 +616,9 @@ class A1(minitaur.Minitaur):
                     self.GetTrueMotorAngles()))
 
     def _StepInternal(self, action, motor_control_mode=None):
+        # print("--------------------")
+        # print("StepInternal a1.py")
+        # print("--------------------")
         if self._timesteps is not None:
             now = time.time()
             self._timesteps.append(now - self._last_step_time_wall)

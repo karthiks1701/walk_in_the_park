@@ -312,8 +312,13 @@ class LocomotionGymEnv(gym.Env):
       ValueError: The action dimension is not the same as the number of motors.
       ValueError: The magnitude of actions is out of bounds.
     """
+        print(f"DEBUG: action passed to LocoGymEnv:\n{action}")
+
         self._last_base_position = self._robot.GetBasePosition()
         self._last_action = action
+        # print("------------------")
+        # print(f"STEP LocoGymEnv, action: {action} env_rand {self._env_randomizers}")
+        # print("------------------")
 
         if self._is_render:
             # Sleep, otherwise the computation takes less time than real time,

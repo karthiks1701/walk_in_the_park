@@ -50,6 +50,7 @@ def main(_):
 
     if FLAGS.real_robot:
         from real.envs.a1_env import A1Real
+        print('Using real robot')
         env = A1Real(zero_action=np.asarray([0.05, 0.9, -1.8] * 4))
     else:
         from env_utils import make_mujoco_env
@@ -106,13 +107,17 @@ def main(_):
     # print(env.reset())
     observation, done = env.reset(), False
 
-    for i in tqdm.tqdm(range(start_i, FLAGS.max_steps),
-                       smoothing=0.1,
-                       disable=not FLAGS.tqdm):
+    for i in range(start_i, FLAGS.max_steps):
         if i < FLAGS.start_training:
             action = env.action_space.sample()
         else:
             action, agent = agent.sample_actions(observation)
+
+            # print("------------------")
+            # offset = np.array([0.05, 0.9, -1.8] * 4)
+            print("DEBUG: Action in main:\n", action)            
+            # print("DEBUG: Action w/o: ", action - offset)
+            # print("------------------")
         next_observation, reward, done, info = env.step(action)
 
         if not done or 'TimeLimit.truncated' in info:

@@ -15,6 +15,69 @@ import tensorflow as tf
 Soft Actor-Critic Agent
 '''
 
+import pickle as pkl
+import torch
+from pathlib import Path
+
+counter = 0
+
+class ResetModel(torch.nn.Module):
+
+    def __init__(self):
+        super().__init__()
+
+        with open("weights.pkl", "rb") as f:
+            weights = pkl.load(f)
+
+        w_0 = torch.Tensor(weights["main/actor/0/dense/kernel"]).T
+        b_0 = torch.Tensor(weights["main/actor/0/dense/bias"])
+        w_1 = torch.Tensor(weights["main/actor/1/dense/kernel"]).T
+        b_1 = torch.Tensor(weights["main/actor/1/dense/bias"])
+        w_mean = torch.Tensor(weights["main/actor/mean/dense/kernel"]).T
+        b_mean = torch.Tensor(weights["main/actor/mean/dense/bias"])
+        b_std = torch.Tensor(weights["main/actor/logstd/bias"])
+
+        # observation_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(84, ))
+        # high = observation_space.high
+        # low = observation_space.low
+
+        self.obs_mean = torch.Tensor(weights["resource/s_norm/mean"])
+        self.obs_std = torch.Tensor(weights["resource/s_norm/std"])
+        self.obs_mean.requires_grad = False
+        self.obs_std.requires_grad = False
+
+        self.act_mean = torch.Tensor(weights["resource/a_norm/mean"])
+        self.act_std = torch.Tensor(weights["resource/a_norm/std"])
+        self.act_mean.requires_grad = False
+        self.act_std.requires_grad = False
+
+        self.fc0 = torch.nn.Linear(in_features=84, out_features=512, bias=True)
+        self.fc1 = torch.nn.Linear(in_features=512, out_features=256, bias=True)
+        self.mu = torch.nn.Linear(in_features=256, out_features=12, bias=True)
+
+        # fill weights
+
+        self.fc0.weight = torch.nn.Parameter(w_0)
+        self.fc0.bias = torch.nn.Parameter(b_0)
+        self.fc1.weight = torch.nn.Parameter(w_1)
+        self.fc1.bias = torch.nn.Parameter(b_1)
+        self.mu.weight = torch.nn.Parameter(w_mean)
+        self.mu.bias = torch.nn.Parameter(b_mean)
+
+    def forward(self, x):
+        # normalize x
+        x = (x - self.obs_mean) / self.obs_std
+        # inference
+        x = torch.nn.functional.relu(self.fc0(x))
+        x = torch.nn.functional.relu(self.fc1(x))
+        x = self.mu(x)
+        x = torch.tanh(x)
+        # unnormalize output:
+        x = x * self.act_std + self.act_mean
+
+        return x
+
+
 
 class SACAgent(rl_agent.RLAgent):
     ADV_EPS = 1e-5
@@ -76,6 +139,7 @@ class SACAgent(rl_agent.RLAgent):
         self._init_samples = init_samples
 
         self._actor_bound_loss_weight = 10.0
+        
 
         super().__init__(env=env,
                          sess=sess,
@@ -88,6 +152,9 @@ class SACAgent(rl_agent.RLAgent):
         return
 
     def sample_action(self, s, test):
+
+        # global counter
+
         n = len(s.shape)
         s = np.reshape(s, [-1, self.get_state_size()])
 
@@ -103,6 +170,52 @@ class SACAgent(rl_agent.RLAgent):
         if n == 1:
             a = a[0]
             logp = logp[0]
+
+        # resetWeight = ResetModel()
+        # action = resetWeight(torch.Tensor(s)) 
+        # print("-----------------------------")
+        # print("observation: ", s)
+        # print(f"R:{s[0][0]}")
+        # print(f"P:{s[0][1]}")
+        # print(f"dR:{s[0][2]}")
+        # print(f"dP:{s[0][3]}")
+        # offset = 4 * 3
+        # print(f"a1:{s[0][offset]}")
+        # print(f"a2:{s[0][offset+1]}")
+        # print(f"a3:{s[0][offset+2]}")
+        # print(f"a4:{s[0][offset+3]}")
+        # print(f"a5:{s[0][offset+4]}")
+        # print(f"a6:{s[0][offset+5]}")
+        # print(f"a7:{s[0][offset+6]}")
+        # print(f"a8:{s[0][offset+7]}")
+        # print(f"a9:{s[0][offset+8]}")
+        # print(f"a10:{s[0][offset+9]}")
+        # print(f"a11:{s[0][offset+10]}")
+        # print(f"a12:{s[0][offset+11]}")
+        # offset += 12 * 3
+        # print(f"v1:{s[0][offset]}")
+        # print(f"v2:{s[0][offset+1]}")
+        # print(f"v3:{s[0][offset+2]}")
+        # print(f"v4:{s[0][offset+3]}")
+        # print(f"v5:{s[0][offset+4]}")
+        # print(f"v6:{s[0][offset+5]}")
+        # print(f"v7:{s[0][offset+6]}")
+        # print(f"v8:{s[0][offset+7]}")
+        # print(f"v9:{s[0][offset+8]}")
+        # print(f"v10:{s[0][offset+9]}")
+        # print(f"v11:{s[0][offset+10]}")
+        # print(f"v12:{s[0][offset+11]}")
+        # print("observation high and low: ", self._env.action_space.high, self._env.action_space.low)
+        # print("action: ", action)
+        print("orig action: ", a)
+        # print("-----------------------------")
+        # counter += 1
+
+        # if counter == 5:
+        #     exit()
+
+        
+
 
         return a, logp
 
