@@ -27,11 +27,12 @@ Finally, copy the built `robot_interface.XXX.so` file to this directory.
 Example command to run simulated training:
 
 ```bash
-MUJOCO_GL=egl XLA_PYTHON_CLIENT_PREALLOCATE=false python train_online.py --env_name=A1Run-v0 \
+MUJOCO_GL=egl XLA_PYTHON_CLIENT_PREALLOCATE=false python3 train_online.py --env_name=A1Run-v0 \
                 --utd_ratio=20 \
                 --start_training=1000 \
                 --max_steps=100000 \
-                --config=configs/droq_config.py
+                --config=configs/droq_config.py \ 
+                --real_robot=True
 ```
 
 To run training on the real robot, add `--real_robot=True`
