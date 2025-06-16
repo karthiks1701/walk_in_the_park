@@ -58,7 +58,8 @@ RUN pip install flax \
 
 # --- Clone Walk in the Park repo ---
 WORKDIR /workspace
-RUN git clone --recurse-submodules  https://github.com/karthiks1701/walk_in_the_park.git
+ARG TAG=0
+RUN git clone --recurse-submodules https://github.com/karthiks1701/walk_in_the_park.git
 WORKDIR /workspace/walk_in_the_park
 
 # --- Copy Unitree SDK binary and build ---

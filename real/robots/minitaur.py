@@ -1362,12 +1362,12 @@ class Minitaur(object):
       kp: proportional gain(s) of the motors.
       kd: derivative gain(s) of the motors.
     """
-        if isinstance(kp, (collections.Sequence, np.ndarray)):
+        if isinstance(kp, (collections.abc.Sequence, np.ndarray)):
             self._motor_kps = np.asarray(kp)
         else:
             self._motor_kps = np.full(self.num_motors, kp)
 
-        if isinstance(kd, (collections.Sequence, np.ndarray)):
+        if isinstance(kd, (collections.abc.Sequence, np.ndarray)):
             self._motor_kds = np.asarray(kd)
         else:
             self._motor_kds = np.full(self.num_motors, kd)
