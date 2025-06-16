@@ -94,7 +94,8 @@ def main(_):
         FLAGS.seed, env.observation_space, env.action_space, **kwargs
     )
 
-    base_dir = Path(__file__).resolve()
+    base_dir = Path(__file__).resolve().parent
+
 
     chkpt_dir = base_dir / "checkpoints"
     chkpt_dir.mkdir(parents=True, exist_ok=True)
